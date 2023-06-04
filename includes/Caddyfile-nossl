@@ -1,0 +1,13 @@
+{
+	# debug
+}
+
+yourhostnamehere:80, jail_ip:80 {
+	
+  reverse_proxy localhost:2342
+  
+	log {
+  		output file /var/log/yourhostnamehere.log
+	}
+  
+}

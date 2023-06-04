@@ -1,0 +1,20 @@
+{
+	# debug
+	acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+	email youremailhere
+	# default_sni yourhostnamehere
+}
+
+yourhostnamehere {
+	
+  reverse_proxy localhost:2342
+  
+  tls {
+  	dns dns_plugin api_token
+  }
+  
+	log {
+		output file /var/log/yourhostnamehere.log
+	}
+  
+}

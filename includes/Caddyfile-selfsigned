@@ -1,0 +1,16 @@
+{
+	# debug
+	# default_sni yourhostnamehere
+}
+
+yourhostnamehere {
+	
+  reverse_proxy localhost:2342
+  
+  tls /usr/local/etc/pki/tls/certs/fullchain.pem /usr/local/etc/pki/tls/private/privkey.pem
+  
+	log {
+		output file /var/log/yourhostnamehere.log
+	}
+  
+}
