@@ -28,7 +28,7 @@ If you aren't able or willing to obtain a certificate from Let's Encrypt, this s
 
 You will need to create
 - 1 Dataset named `photoprism` in your pool under which you will create three sub-datasets.
-e.g. `/mnt/mypool/vaultwarden`
+e.g. `/mnt/mypool/photoprism`
 - one named `db`, which will store the database
 - one named `config`, which will be used to store database passwords in case of a reinstall
 - one named `photos`, which will be the main storage for photoprism media
