@@ -103,20 +103,18 @@ if [ $STANDALONE_CERT -eq 1 ] && [ "${CERT_EMAIL}" = "" ] ; then
   exit 1
 fi
 
-# If POOL_PATH directory is not present, create it
-if [ -z "${POOL_PATH}/photoprism" ]; then
-  mkdir -p "${POOL_PATH}"/photoprism/photos
-fi
-
 # If DB_PATH and CONFIG_PATH weren't set, set them and create directories
 if [ -z "${CONFIG_PATH}" ]; then
   CONFIG_PATH="${POOL_PATH}"/photoprism/config
-  mkdir -p "${CONFIG_PATH}"
 fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
-  mkdir -p "${DB_PATH}"/"${DATABASE}"
 fi
+
+# Create directories on POOL_PATH
+mkdir -p "${POOL_PATH}"/photoprism/photos
+mkdir -p "${CONFIG_PATH}"
+mkdir -p "${DB_PATH}"/"${DATABASE}"
 
 # Check for reinstall
 if [ "$(ls -A "${CONFIG_PATH}")" ]; then
