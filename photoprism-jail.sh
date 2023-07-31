@@ -104,7 +104,7 @@ if [ $STANDALONE_CERT -eq 1 ] && [ "${CERT_EMAIL}" = "" ] ; then
 fi
 
 # If POOL_PATH directory is not present, create it
-if [ -z "${POOL_PATH}"/photoprism ]; then
+if [ -z "${POOL_PATH}"/photoprism/photos ]; then
   mkdir -p "${POOL_PATH}"/photoprism/photos
 fi
 
