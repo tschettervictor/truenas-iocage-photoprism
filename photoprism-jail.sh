@@ -337,6 +337,9 @@ iocage exec "${JAIL_NAME}" sed -i '' "s/youremailhere/${CERT_EMAIL}/" /usr/local
 iocage exec "${JAIL_NAME}" sysrc caddy_enable="YES"
 iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
 
+# Don't need /mnt/includes any more, so unmount it
+iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
+
 # Start services
 iocage exec "${JAIL_NAME}" service caddy start
 iocage exec "${JAIL_NAME}" service photoprism start
