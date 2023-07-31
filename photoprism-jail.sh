@@ -109,9 +109,11 @@ fi
 # If DB_PATH and CONFIG_PATH weren't set, set them
 if [ -z "${CONFIG_PATH}" ]; then
   CONFIG_PATH="${POOL_PATH}"/photoprism/config
+  mkdir -p "${CONFIG_PATH}"
 fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
+  mkdir -p "${DB_PATH}"
 fi
 
 # Check for reinstall
@@ -203,7 +205,7 @@ rm /tmp/pkg.json
 #####
 
 mkdir -p "${DB_PATH}"/"${DATABASE}"
-mkdir -p "${CONFIG_PATH}"
+#mkdir -p "${CONFIG_PATH}"
 mkdir -p "${CONFIG_PATH}"/passwords
 mkdir -p "${POOL_PATH}"/photoprism
 
