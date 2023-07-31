@@ -117,9 +117,9 @@ if [ -z "${DB_PATH}" ]; then
 fi
 
 # Check for reinstall
-if [ '$(ls -A "${CONFIG_PATH}")' ]; then
+if [ $(ls -A "${CONFIG_PATH}") ]; then
 	echo "Existing Photoprism config detected...Checking database compatability."
-	if [ '$(ls -A ${DB_PATH}/${DATABASE}")' ]; then
+	if [ $(ls -A ${DB_PATH}/${DATABASE}") ]; then
 		echo "Database is compatible, continuing..."
 		REINSTALL="true"
 	else
