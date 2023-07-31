@@ -105,7 +105,7 @@ fi
 
 # If POOL_PATH directory is not present, create it
 if [ -z "${POOL_PATH}"/photoprism ]; then
-  mkdir -p "${POOL_PATH}"/photoprism
+  mkdir -p "${POOL_PATH}"/photoprism/photos
 fi
 
 # If DB_PATH and CONFIG_PATH weren't set, set them and create directories
