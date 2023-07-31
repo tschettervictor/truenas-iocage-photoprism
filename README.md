@@ -33,7 +33,7 @@ e.g. `/mnt/mypool/photoprism`
 - one named `config`, which will be used to store database passwords in case of a reinstall
 - one named `photos`, which will be the main storage for photoprism media
 
-If these are not present, a directory `/vaultwarden` will be created in `$POOL_PATH` with the above mentioned sub-directories. You will want to create the datasets, otherwise directories will just be created. Datasets make it easy to do snapshots etc...
+If these are not present, a directory `/photoprism` will be created in `$POOL_PATH` with the above mentioned sub-directories. You will want to create the datasets, otherwise directories will just be created. Datasets make it easy to do snapshots etc...
 
 ### Installation
 Download the repository to a convenient directory on your TrueNAS system by changing to that directory and running `git clone https://github.com/tschettervictor/truenas-iocage-photoprism`.  Then change into the new `truenas-iocage-photoprism` directory and create a file called `photoprism-config` with your favorite text editor.  In its minimal form, it would look like this:
