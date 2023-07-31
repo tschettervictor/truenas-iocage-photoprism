@@ -125,6 +125,7 @@ if [ "$(ls -A "${CONFIG_PATH}")" ]; then
 		echo "Please try again after removing your config files or using the same database used previously"
 		exit 1
 	fi
+ 	else echo "No existing config detected. Starting full install."
 fi
 
 if [ "${REINSTALL}" == "true" ]; then
