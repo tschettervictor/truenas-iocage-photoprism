@@ -101,7 +101,12 @@ if [ $STANDALONE_CERT -eq 1 ] && [ "${CERT_EMAIL}" = "" ] ; then
   exit 1
 fi
 
-# If DB_PATH ORIGINALS_PATH IMPORTS_PATH and CONFIG_PATH weren't set, set them
+# If POOL_PATH directory is not present, create it
+if [ -z "${POOL_PATH}/photoprism" ]; then
+  mkdir -p "${POOL_PATH}"/photoprism
+fi
+
+# If DB_PATH and CONFIG_PATH weren't set, set them
 if [ -z "${CONFIG_PATH}" ]; then
   CONFIG_PATH="${POOL_PATH}"/photoprism/config
 fi
