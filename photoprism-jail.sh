@@ -32,6 +32,8 @@ DNS_CERT=0
 NO_CERT=0
 CERT_EMAIL=""
 CONFIG_NAME="photoprism-config"
+DB_USER="photoprism"
+DB_NAME="photoprism"
 
 # Check for photoprism-config and set configuration
 SCRIPT=$(readlink -f "$0")
@@ -106,14 +108,14 @@ if [ -z "${POOL_PATH}"/photoprism ]; then
   mkdir -p "${POOL_PATH}"/photoprism
 fi
 
-# If DB_PATH and CONFIG_PATH weren't set, set them
+# If DB_PATH and CONFIG_PATH weren't set, set them and create directories
 if [ -z "${CONFIG_PATH}" ]; then
-  CONFIG_PATH="${POOL_PATH}"/photoprism/config
+  CONFIG_PATH="${POOL_PATH}"/photoprism/config/passwords
   mkdir -p "${CONFIG_PATH}"
 fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
-  mkdir -p "${DB_PATH}"
+  mkdir -p "${DB_PATH}"/"${DATABASE}"
 fi
 
 # Check for reinstall
@@ -141,8 +143,6 @@ else
 	DB_ROOT_PASSWORD=$(openssl rand -base64 16)
 	echo "Generating new passwords for database..."
 fi
-DB_USER="photoprism"
-DB_NAME="photoprism"
 
 if [ "${DB_PATH}" = "${CONFIG_PATH}" ]
 then
@@ -203,11 +203,6 @@ rm /tmp/pkg.json
 # Directory Creation and Mounting
 #
 #####
-
-mkdir -p "${DB_PATH}"/"${DATABASE}"
-#mkdir -p "${CONFIG_PATH}"
-mkdir -p "${CONFIG_PATH}"/passwords
-mkdir -p "${POOL_PATH}"/photoprism
 
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/photos
 iocage exec "${JAIL_NAME}" mkdir -p /var/db/mysql
