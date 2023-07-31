@@ -110,8 +110,8 @@ fi
 
 # If DB_PATH and CONFIG_PATH weren't set, set them and create directories
 if [ -z "${CONFIG_PATH}" ]; then
-  CONFIG_PATH="${POOL_PATH}"/photoprism/config/passwords
-  mkdir -p "${CONFIG_PATH}"
+  CONFIG_PATH="${POOL_PATH}"/photoprism/config
+  mkdir -p "${CONFIG_PATH}"/passwords
 fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
