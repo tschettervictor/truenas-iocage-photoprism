@@ -110,8 +110,6 @@ fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
 fi
-
-# Create directories on POOL_PATH
 mkdir -p "${POOL_PATH}"/photoprism/photos
 mkdir -p "${CONFIG_PATH}"
 mkdir -p "${DB_PATH}"/"${DATABASE}"
@@ -184,7 +182,9 @@ cat <<__EOF__ >/tmp/pkg.json
   "darktable",
   "rawtherapee",
   "libheif",
-  "p5-Image-ExifTool"
+  "p5-Image-ExifTool",
+  "mariadb106-server",
+  "mariadb106-client"
   ]
 }
 __EOF__
@@ -208,13 +208,10 @@ iocage exec "${JAIL_NAME}" mkdir -p /var/db/mysql
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/includes
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/www
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d
-
+# Mount Directories
 iocage fstab -a "${JAIL_NAME}" "${DB_PATH}"/"${DATABASE}" /var/db/mysql nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/photoprism/photos /mnt/photos nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
-
-# Install MariaDB
-iocage exec "${JAIL_NAME}" pkg install -y mariadb106-server mariadb106-client
 
 # Configure startup parameters and start database
 iocage exec "${JAIL_NAME}" sysrc mysql_enable="YES"
@@ -247,7 +244,6 @@ echo "${DB_PASSWORD}" > "${CONFIG_PATH}"/passwords/db_password.txt
 echo "${ADMIN_PASSWORD}" > "${CONFIG_PATH}"/passwords/admin_password.txt
 
 # Configure PhotoPrism
-# pkg add https://github.com/psa/libtensorflow1-freebsd-port/releases/download/1.15.5/libtensorflow1-1.15.5-FreeBSD-12.2-noAVX.pkg
 iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/libtensorflow1-freebsd-port/releases/download/1.15.5/libtensorflow1-1.15.5-FreeBSD-12.2-noAVX.pkg"
 iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/photoprism-freebsd-port/releases/download/2022-11-18/photoprism-g20221118-FreeBSD-12.3-separatedTensorflow.pkg"
 iocage exec "${JAIL_NAME}" sysrc photoprism_enable="YES"
