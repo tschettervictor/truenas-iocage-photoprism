@@ -110,9 +110,6 @@ fi
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
 fi
-mkdir -p "${POOL_PATH}"/photoprism/photos
-mkdir -p "${CONFIG_PATH}"
-mkdir -p "${DB_PATH}"/"${DATABASE}"
 
 # Check for reinstall
 if [ "$(ls -A "${CONFIG_PATH}")" ]; then
@@ -202,6 +199,10 @@ rm /tmp/pkg.json
 # Directory Creation and Mounting
 #
 #####
+
+mkdir -p "${POOL_PATH}"/photoprism/photos
+mkdir -p "${CONFIG_PATH}"
+mkdir -p "${DB_PATH}"/"${DATABASE}"
 
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/photos
 iocage exec "${JAIL_NAME}" mkdir -p /var/db/mysql
