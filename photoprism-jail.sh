@@ -336,9 +336,8 @@ iocage exec "${JAIL_NAME}" sysrc caddy_config="/usr/local/www/Caddyfile"
 # Don't need /mnt/includes any more, so unmount it
 iocage fstab -r "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
-# Start services
-iocage exec "${JAIL_NAME}" service caddy start
-iocage exec "${JAIL_NAME}" service photoprism start
+# Restart
+iocage restart "${JAIL_NAME}"
 
 if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
   echo "You have obtained your Let's Encrypt certificate using the staging server."
@@ -370,7 +369,6 @@ echo "---------------"
 if [ "${REINSTALL}" == "true" ]; then
 	echo "You did a reinstall, please use your old database and account credentials."
 else
-
 	echo "---------------"
 	echo "Database Information"
 	echo "Database user = ${DB_USER}"
