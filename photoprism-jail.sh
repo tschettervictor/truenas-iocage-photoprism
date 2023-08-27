@@ -203,7 +203,7 @@ iocage exec "${JAIL_NAME}" sysrc mysql_enable="YES"
 iocage exec "${JAIL_NAME}" sysrc mysql_args="--bind-address=127.0.0.1"
 iocage exec "${JAIL_NAME}" service mysql-server start
 if [ "${REINSTALL}" == "true" ]; then
-	echo "Reinstall detected, skipping generation of new config and database"
+	echo "Reinstall detected, skipping generation of new database and credentials."
  	iocage exec "${JAIL_NAME}" cp -f /mnt/includes/my.cnf /root/.my.cnf
   	iocage exec "${JAIL_NAME}" sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 else
@@ -222,20 +222,11 @@ iocage exec "${JAIL_NAME}" mysql -u root -e "FLUSH PRIVILEGES;"
 iocage exec "${JAIL_NAME}" mysqladmin --user=root password "${DB_ROOT_PASSWORD}" reload
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/my.cnf /root/.my.cnf
 iocage exec "${JAIL_NAME}" sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
-fi
-
 # Save passwords for later reference
-if [ "${REINSTALL}" == "true" ]; then
-	echo "Passwords for database have not changed."
- 	echo "They should be located in the TrueNAS root directory from the original install."
-else
-	echo "${DB_NAME} root password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_db_password.txt
-	echo "Photoprism database password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
-	echo "Photoprism Administrator password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
-	echo "${DB_ROOT_PASSWORD}" > "${CONFIG_PATH}"/passwords/root_db_password.txt
-	echo "${DB_PASSWORD}" > "${CONFIG_PATH}"/passwords/db_password.txt
-	echo "${ADMIN_PASSWORD}" > "${CONFIG_PATH}"/passwords/admin_password.txt
- 	ehco "Passwords for Database and admin user have been save in TrueNAS root directory."
+echo "${DB_NAME} root password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_db_password.txt
+echo "Photoprism database password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
+echo "Photoprism Administrator password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
+echo "Passwords for Database and admin user have been saved in TrueNAS root directory."
 fi
 
 #####
