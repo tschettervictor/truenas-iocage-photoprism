@@ -352,6 +352,24 @@ fi
 echo "---------------"
 echo "Installation complete!"
 echo "---------------"
+if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
+  echo "You have obtained your Let's Encrypt certificate using the staging server."
+  echo "This certificate will not be trusted by your browser and will cause SSL errors"
+  echo "when you connect.  Once you've verified that everything else is working"
+  echo "correctly, you should issue a trusted certificate.  To do this, run:"
+  echo "  iocage exec ${JAIL_NAME} /root/remove-staging.sh"
+  echo ""
+elif [ $SELFSIGNED_CERT -eq 1 ]; then
+  echo "You have chosen to create a self-signed TLS certificate for your installation."
+  echo "installation.  This certificate will not be trusted by your browser and"
+  echo "will cause SSL errors when you connect.  If you wish to replace this certificate"
+  echo "with one obtained elsewhere, the private key is located at:"
+  echo "/usr/local/etc/pki/tls/private/privkey.pem"
+  echo "The full chain (server + intermediate certificates together) is at:"
+  echo "/usr/local/etc/pki/tls/certs/fullchain.pem"
+  echo ""
+fi
+echo "---------------"
 if [ $NO_CERT -eq 1 ]; then
   echo "Using your web browser, go to http://${HOST_NAME} to log in"
 else
