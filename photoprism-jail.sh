@@ -21,7 +21,6 @@ DEFAULT_GW_IP=""
 INTERFACE="vnet0"
 VNET="on"
 POOL_PATH=""
-CONFIG_PATH=""
 DB_PATH=""
 JAIL_NAME="photoprism"
 HOST_NAME=""
@@ -103,49 +102,32 @@ if [ $STANDALONE_CERT -eq 1 ] && [ "${CERT_EMAIL}" = "" ] ; then
   exit 1
 fi
 
-# If DB_PATH and CONFIG_PATH weren't set, set them and create directories
-if [ -z "${CONFIG_PATH}" ]; then
-  CONFIG_PATH="${POOL_PATH}"/photoprism/config
-fi
+# If DB_PATH wasn't set, set it and create directory
 if [ -z "${DB_PATH}" ]; then
   DB_PATH="${POOL_PATH}"/photoprism/db
 fi
 
 # Check for reinstall
-if [ "$(ls -A "${CONFIG_PATH}")" ]; then
-	echo "Existing Photoprism config detected...Checking database compatability."
+if [ "$(ls -A "${DB_PATH}")" ]; then
+	echo "Existing Photoprism database detected...Checking database compatability."
 	if [ "$(ls -A "${DB_PATH}/${DATABASE}")" ]; then
 		echo "Database is compatible, continuing..."
 		REINSTALL="true"
 	else
 		echo "ERROR: You can not reinstall without the previous database"
-		echo "Please try again after removing your config files or using the same database used previously"
+		echo "Please try again after removing your database files or using the same database used previously"
 		exit 1
 	fi
- 	else echo "No existing config detected. Starting full install."
-  	mkdir -p "${CONFIG_PATH}"/passwords
+ 	else echo "No existing database detected. Starting full install."
 fi
 
-if [ "${REINSTALL}" == "true" ]; then
-	ADMIN_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/admin_password.txt)
- 	DB_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/db_password.txt)
-	DB_ROOT_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/root_db_password.txt)
-	echo "Reinstall detected. Using existing passwords."
-else	
-	ADMIN_PASSWORD=$(openssl rand -base64 12)
-	DB_PASSWORD=$(openssl rand -base64 16)
-	DB_ROOT_PASSWORD=$(openssl rand -base64 16)
-	echo "Generating new passwords for database..."
-fi
+ADMIN_PASSWORD=$(openssl rand -base64 12)
+DB_PASSWORD=$(openssl rand -base64 16)
+DB_ROOT_PASSWORD=$(openssl rand -base64 16)
 
-if [ "${DB_PATH}" = "${CONFIG_PATH}" ]
+if [ "${DB_PATH}" = "${POOL_PATH}" ]
 then
-  echo "DB_PATH and CONFIG_PATH must be different!"
-  exit 1
-fi
-if [ "${CONFIG_PATH}" = "${POOL_PATH}" ] || [ "${DB_PATH}" = "${POOL_PATH}" ]
-then
-  echo "CONFIG_PATH and DB_PATH must be different from POOL_PATH!"
+  echo "DB_PATH must be different from POOL_PATH!"
   exit 1
 fi
 
@@ -201,7 +183,6 @@ rm /tmp/pkg.json
 #####
 
 mkdir -p "${POOL_PATH}"/photoprism/photos
-mkdir -p "${CONFIG_PATH}"
 mkdir -p "${DB_PATH}"/"${DATABASE}"
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/photos
 iocage exec "${JAIL_NAME}" mkdir -p /var/db/mysql
@@ -223,6 +204,8 @@ iocage exec "${JAIL_NAME}" sysrc mysql_args="--bind-address=127.0.0.1"
 iocage exec "${JAIL_NAME}" service mysql-server start
 if [ "${REINSTALL}" == "true" ]; then
 	echo "Reinstall detected, skipping generation of new config and database"
+ 	iocage exec "${JAIL_NAME}" cp -f /mnt/includes/my.cnf /root/.my.cnf
+  	iocage exec "${JAIL_NAME}" sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 else
 	if ! iocage exec "${JAIL_NAME}" mysql -u root -e "CREATE DATABASE ${DB_NAME} CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;"
 		then
@@ -236,7 +219,11 @@ iocage exec "${JAIL_NAME}" mysql -u root -e "DELETE FROM mysql.user WHERE User='
 iocage exec "${JAIL_NAME}" mysql -u root -e "DROP DATABASE IF EXISTS test;"
 iocage exec "${JAIL_NAME}" mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
 iocage exec "${JAIL_NAME}" mysql -u root -e "FLUSH PRIVILEGES;"
+iocage exec "${JAIL_NAME}" mysqladmin --user=root password "${DB_ROOT_PASSWORD}" reload
+iocage exec "${JAIL_NAME}" cp -f /mnt/includes/my.cnf /root/.my.cnf
+iocage exec "${JAIL_NAME}" sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 fi
+
 # Save passwords for later reference
 if [ "${REINSTALL}" == "true" ]; then
 	echo "Passwords for database have not changed."
