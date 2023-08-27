@@ -127,9 +127,9 @@ if [ "$(ls -A "${CONFIG_PATH}")" ]; then
 fi
 
 if [ "${REINSTALL}" == "true" ]; then
-	DB_ROOT_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/root_db_password.txt)
-	DB_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/db_password.txt)
 	ADMIN_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/admin_password.txt)
+ 	DB_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/db_password.txt)
+	DB_ROOT_PASSWORD=$(cat "${CONFIG_PATH}"/passwords/root_db_password.txt)
 	echo "Reinstall detected. Using existing passwords."
 else	
 	ADMIN_PASSWORD=$(openssl rand -base64 12)
@@ -203,22 +203,24 @@ rm /tmp/pkg.json
 mkdir -p "${POOL_PATH}"/photoprism/photos
 mkdir -p "${CONFIG_PATH}"
 mkdir -p "${DB_PATH}"/"${DATABASE}"
-
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/photos
 iocage exec "${JAIL_NAME}" mkdir -p /var/db/mysql
 iocage exec "${JAIL_NAME}" mkdir -p /mnt/includes
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/www
 iocage exec "${JAIL_NAME}" mkdir -p /usr/local/etc/rc.d
-# Mount Directories
 iocage fstab -a "${JAIL_NAME}" "${DB_PATH}"/"${DATABASE}" /var/db/mysql nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${POOL_PATH}"/photoprism/photos /mnt/photos nullfs rw 0 0
 iocage fstab -a "${JAIL_NAME}" "${INCLUDES_PATH}" /mnt/includes nullfs rw 0 0
 
-# Configure startup parameters and start database
+#####
+#
+# Database Setup
+#
+#####
+
 iocage exec "${JAIL_NAME}" sysrc mysql_enable="YES"
 iocage exec "${JAIL_NAME}" sysrc mysql_args="--bind-address=127.0.0.1"
 iocage exec "${JAIL_NAME}" service mysql-server start
-
 if [ "${REINSTALL}" == "true" ]; then
 	echo "Reinstall detected, skipping generation of new config and database"
 else
@@ -235,23 +237,32 @@ iocage exec "${JAIL_NAME}" mysql -u root -e "DROP DATABASE IF EXISTS test;"
 iocage exec "${JAIL_NAME}" mysql -u root -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';"
 iocage exec "${JAIL_NAME}" mysql -u root -e "FLUSH PRIVILEGES;"
 fi
-
 # Save passwords for later reference
-echo "${DB_NAME} root password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_db_password.txt
-echo "Photoprism database password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
-echo "Photoprism Administrator password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
-echo "${DB_ROOT_PASSWORD}" > "${CONFIG_PATH}"/passwords/root_db_password.txt
-echo "${DB_PASSWORD}" > "${CONFIG_PATH}"/passwords/db_password.txt
-echo "${ADMIN_PASSWORD}" > "${CONFIG_PATH}"/passwords/admin_password.txt
+if [ "${REINSTALL}" == "true" ]; then
+	echo "Passwords for database have not changed."
+ 	echo "They should be located in the TrueNAS root directory from the original install."
+else
+	echo "${DB_NAME} root password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_db_password.txt
+	echo "Photoprism database password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
+	echo "Photoprism Administrator password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_db_password.txt
+	echo "${DB_ROOT_PASSWORD}" > "${CONFIG_PATH}"/passwords/root_db_password.txt
+	echo "${DB_PASSWORD}" > "${CONFIG_PATH}"/passwords/db_password.txt
+	echo "${ADMIN_PASSWORD}" > "${CONFIG_PATH}"/passwords/admin_password.txt
+ 	ehco "Passwords for Database and admin user have been save in TrueNAS root directory."
+fi
 
-# Configure PhotoPrism
+#####
+#
+# Photoprism Installation
+#
+#####
+
 iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/libtensorflow1-freebsd-port/releases/download/1.15.5/libtensorflow1-1.15.5-FreeBSD-12.2-noAVX.pkg"
 iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/photoprism-freebsd-port/releases/download/2022-11-18/photoprism-g20221118-FreeBSD-12.3-separatedTensorflow.pkg"
 iocage exec "${JAIL_NAME}" sysrc photoprism_enable="YES"
 iocage exec "${JAIL_NAME}" sysrc photoprism_assetspath="/var/db/photoprism/assets"
 iocage exec "${JAIL_NAME}" sysrc photoprism_storagepath="/mnt/photos/"
 iocage exec "${JAIL_NAME}" sysrc photoprism_defaultsyaml="/mnt/photos/options.yml"
-
 iocage exec "${JAIL_NAME}" "touch /mnt/photos/options.yml"
 if [ "${REINSTALL}" == "true" ]; then
 	echo "No need to copy options.yml file on a reinstall."
@@ -274,9 +285,10 @@ iocage exec "${JAIL_NAME}" chown -R photoprism:photoprism /mnt/photos
 
 #####
 #
-# Caddy Installation
+# Caddyserver Installation
 #
 #####
+
 # Build xcaddy, use it to build Caddy
 if ! iocage exec "${JAIL_NAME}" "go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest"
 then
@@ -359,22 +371,27 @@ elif [ $SELFSIGNED_CERT -eq 1 ]; then
   echo ""
 fi
 
+echo "---------------"
 echo "Installation complete!"
+echo "---------------"
 if [ $NO_CERT -eq 1 ]; then
   echo "Using your web browser, go to http://${HOST_NAME} to log in"
 else
   echo "Using your web browser, go to https://${HOST_NAME} to log in"
 fi
+echo "---------------"
 if [ "${REINSTALL}" == "true" ]; then
-	echo "You did a reinstall, please use your old database and account credentials"
+	echo "You did a reinstall, please use your old database and account credentials."
 else
 
-	echo "Default user is admin, password is ${ADMIN_PASSWORD}"
-	echo ""
+	echo "---------------"
 	echo "Database Information"
-	echo "--------------------"
 	echo "Database user = ${DB_USER}"
 	echo "Database password = ${DB_PASSWORD}"
-	echo ""
+	echo "---------------"
+ 	echo "User Information"
+	echo "Default user = admin"
+ 	echo "Devault password is ${ADMIN_PASSWORD}"
+  	echo "---------------"
 	echo "All passwords are saved in /root/${JAIL_NAME}_db_password.txt"
 fi
