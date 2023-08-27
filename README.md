@@ -27,10 +27,9 @@ If you aren't able or willing to obtain a certificate from Let's Encrypt, this s
 ### Prerequisites
 
 You will need to create
-- 1 Dataset named `photoprism` in your pool under which you will create three sub-datasets.
+- 1 Dataset named `photoprism` in your pool under which you will create 2 sub-datasets.
 e.g. `/mnt/mypool/photoprism`
 - one named `db`, which will store the database
-- one named `config`, which will be used to store database passwords in case of a reinstall
 - one named `photos`, which will be the main storage for photoprism media
 
 If these are not present, a directory `/photoprism` will be created in `$POOL_PATH` with the above mentioned sub-directories. You will want to create the datasets, otherwise directories will just be created. Datasets make it easy to do snapshots etc...
@@ -80,8 +79,6 @@ Visit the [Caddy download page](https://caddyserver.com/download) to see the DNS
 Once you've downloaded the script and prepared the configuration file, run this script (`script photoprism.log ./photoprism-jail.sh`).  The script will run for several minutes.  When it finishes, your jail will be created, Photoprism will be installed, and you'll be shown the username (admin) and password to login.
 
 ### Notes
-- Reinstalls work as expected when all the files are present.
-- The way this script handles passwords for old database is by storing them in a directory that can be accessed when reinstalling. If you try to reinstall without them, photoprism will not work and will show errors.
 - It is possible to mount other datasets containg photos into the jail AFTER you have installed it.
 
 The Caddyfile is located at `/usr/local/www/Caddyfile`
