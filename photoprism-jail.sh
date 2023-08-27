@@ -223,9 +223,9 @@ iocage exec "${JAIL_NAME}" mysqladmin --user=root password "${DB_ROOT_PASSWORD}"
 iocage exec "${JAIL_NAME}" cp -f /mnt/includes/my.cnf /root/.my.cnf
 iocage exec "${JAIL_NAME}" sed -i '' "s|mypassword|${DB_ROOT_PASSWORD}|" /root/.my.cnf
 # Save passwords for later reference
-echo "${DB_NAME} root password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_passwords.txt
-echo "Photoprism database password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_passwords.txt
-echo "Photoprism Administrator password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_passwords.txt
+echo "${DB_NAME} root user is ${DB_USER} and password is ${DB_ROOT_PASSWORD}" > /root/${JAIL_NAME}_passwords.txt
+echo "Photoprism database name is ${DB_NAME} and password is ${DB_PASSWORD}" >> /root/${JAIL_NAME}_passwords.txt
+echo "Photoprism user is admin password is ${ADMIN_PASSWORD}" >> /root/${JAIL_NAME}_passwords.txt
 echo "Passwords for Database and admin user have been saved in TrueNAS root directory."
 fi
 
