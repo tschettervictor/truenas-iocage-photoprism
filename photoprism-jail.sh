@@ -351,8 +351,8 @@ fi
 
 echo "---------------"
 echo "Installation complete!"
-echo "---------------"
 if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
+  echo "---------------"
   echo "You have obtained your Let's Encrypt certificate using the staging server."
   echo "This certificate will not be trusted by your browser and will cause SSL errors"
   echo "when you connect.  Once you've verified that everything else is working"
@@ -360,6 +360,7 @@ if [ $STANDALONE_CERT -eq 1 ] || [ $DNS_CERT -eq 1 ]; then
   echo "  iocage exec ${JAIL_NAME} /root/remove-staging.sh"
   echo ""
 elif [ $SELFSIGNED_CERT -eq 1 ]; then
+  echo "---------------"
   echo "You have chosen to create a self-signed TLS certificate for your installation."
   echo "installation.  This certificate will not be trusted by your browser and"
   echo "will cause SSL errors when you connect.  If you wish to replace this certificate"
@@ -369,14 +370,15 @@ elif [ $SELFSIGNED_CERT -eq 1 ]; then
   echo "/usr/local/etc/pki/tls/certs/fullchain.pem"
   echo ""
 fi
-echo "---------------"
 if [ $NO_CERT -eq 1 ]; then
+  echo "---------------"
   echo "Using your web browser, go to http://${HOST_NAME} to log in"
 else
+  echo "---------------"
   echo "Using your web browser, go to https://${HOST_NAME} to log in"
 fi
-echo "---------------"
 if [ "${REINSTALL}" == "true" ]; then
+	echo "---------------"
 	echo "You did a reinstall, please use your old database and account credentials."
 else
 	echo "---------------"
