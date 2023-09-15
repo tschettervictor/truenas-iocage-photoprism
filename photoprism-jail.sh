@@ -154,10 +154,7 @@ fi
 cat <<__EOF__ >/tmp/pkg.json
 {
   "pkgs": [
-  "nano",
-  "bash",
   "go",
-  "git",
   "ffmpeg",
   "darktable",
   "rawtherapee",
