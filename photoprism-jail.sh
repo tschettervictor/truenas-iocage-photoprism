@@ -237,7 +237,8 @@ fi
 #####
 
 iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/libtensorflow1-freebsd-port/releases/download/1.15.5/libtensorflow1-1.15.5-FreeBSD-12.2-noAVX.pkg"
-iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/photoprism-freebsd-port/releases/download/2022-11-18/photoprism-g20221118-FreeBSD-12.3-separatedTensorflow.pkg"
+iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/photoprism-freebsd-port/releases/download/2023-07-19/photoprism-g20230719-FreeBSD-12.3-separatedTensorflow.pkg"
+#iocage exec "${JAIL_NAME}" "pkg add https://github.com/psa/photoprism-freebsd-port/releases/download/2022-11-18/photoprism-g20221118-FreeBSD-12.3-separatedTensorflow.pkg"
 iocage exec "${JAIL_NAME}" sysrc photoprism_enable="YES"
 iocage exec "${JAIL_NAME}" sysrc photoprism_assetspath="/var/db/photoprism/assets"
 iocage exec "${JAIL_NAME}" sysrc photoprism_storagepath="/mnt/photos/"
